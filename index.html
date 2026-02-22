@@ -77,27 +77,27 @@
     <h3>March 22 — 12:00–2:00 PM</h3>
     <p><strong>Silverwood Presbyterian Church</strong><br>
     8000 Miami Ave, Madeira, OH 45243</p>
-    <p><strong>Seats remaining: <span id="seats22">20</span></strong></p>
+    <p><strong>Seats remaining: <span id="seats22">Loading...</span></strong></p>
 </div>
 
 <div class="session">
     <h3>March 29 — 2:00–4:00 PM</h3>
     <p><strong>Wyoming Fine Arts Center</strong><br>
     322 Wyoming Ave, Wyoming, OH 45215</p>
-    <p><strong>Seats remaining: <span id="seats29">20</span></strong></p>
+    <p><strong>Seats remaining: <span id="seats29">Loading...</span></strong></p>
 </div>
 
 <h2>Registration Form</h2>
 
 <form id="regForm">
     <label>Name:</label>
-    <input type="text" required>
+    <input type="text" id="name" required>
 
     <label>Email:</label>
-    <input type="email" required>
+    <input type="email" id="email" required>
 
     <label>Phone (optional):</label>
-    <input type="text">
+    <input type="text" id="phone">
 
     <label>Select your class date:</label>
     <select id="classDate" required>
@@ -121,7 +121,7 @@
     </select>
 
     <label>Comments or questions:</label>
-    <textarea rows="4"></textarea>
+    <textarea id="comments" rows="4"></textarea>
 
     <button type="submit">Submit Registration</button>
 </form>
@@ -138,38 +138,62 @@
 </div>
 
 <script>
-// Initial seat counts
-let seats22 = 20;
-let seats29 = 20;
+// -----------------------------------------------------
+// LIVE GOOGLE SHEETS DATABASE CONNECTION
+// -----------------------------------------------------
 
+// Your published CSV URL (READ)
+const sheetCSV =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbLIrzbO6tpSCuh85M34gc80OzOciPMNYgI7urYYlo2vDsl-Ku7y7ifvss5iUckaXUK7ZXKxlxTggm/pub?output=csv";
+
+// Your Google Apps Script Web App URL (WRITE)
+const writeURL =
+  "https://script.google.com/macros/s/AKfycbzWA0mP-RoRVfah_7c9xSmVC-0mbX0V_ezxfwZZ9M89zHr3f2TrhG4BESv3UN4S2-Pd/exec";
+
+// Live seat data
+let seats = { "22": 20, "29": 20 };
+
+// Load live seat counts from Google Sheets
+fetch(sheetCSV)
+  .then(res => res.text())
+  .then(text => {
+    const rows = text.split("\n").slice(1);
+    rows.forEach(row => {
+      const [session, remaining] = row.split(",");
+      seats[session.trim()] = parseInt(remaining);
+    });
+    document.getElementById("seats22").textContent = seats["22"];
+    document.getElementById("seats29").textContent = seats["29"];
+  });
+
+// Handle registration
 document.getElementById("regForm").addEventListener("submit", function(event) {
-    event.preventDefault();
+  event.preventDefault();
 
-    let date = document.getElementById("classDate").value;
-    let qty = parseInt(document.getElementById("participants").value);
+  let session = document.getElementById("classDate").value;
+  let qty = parseInt(document.getElementById("participants").value);
 
-    if (date === "22") {
-        if (qty > seats22) {
-            alert("Not enough seats remaining for March 22.");
-            return;
-        }
-        seats22 -= qty;
-        document.getElementById("seats22").textContent = seats22;
+  if (qty > seats[session]) {
+    alert("Not enough seats remaining.");
+    return;
+  }
+
+  // Write update to Google Sheets
+  fetch(writeURL, {
+    method: "POST",
+    body: JSON.stringify({ session, qty })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      seats[session] -= qty;
+      document.getElementById("seats22").textContent = seats["22"];
+      document.getElementById("seats29").textContent = seats["29"];
+      alert("Registration successful! A confirmation email will be sent.");
+    } else {
+      alert(data.message);
     }
-
-    if (date === "29") {
-        if (qty > seats29) {
-            alert("Not enough seats remaining for March 29.");
-            return;
-        }
-        seats29 -= qty;
-        document.getElementById("seats29").textContent = seats29;
-    }
-
-    alert("Registration submitted! A confirmation email will be sent to you.");
-
-    // Placeholder for email automation
-    // This is where a developer or platform automation sends the confirmation email.
+  });
 });
 </script>
 
