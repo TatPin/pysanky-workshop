@@ -53,4 +53,202 @@
     .container {
         width: 90%;
         max-width: 900px;
-       
+        margin: auto;
+        padding: 20px;
+    }
+
+    .session {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border-left: 6px solid var(--ua-red);
+    }
+
+    label { display: block; margin-top: 10px; }
+    input, select, textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 5px;
+        border: 1px solid #bbb;
+    }
+
+    button {
+        background: var(--ua-red);
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        margin-top: 20px;
+        cursor: pointer;
+        font-size: 1em;
+    }
+    button:hover { background: #5c1636; }
+
+    .payment-box {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 6px solid var(--ua-red);
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <!-- Sunflower SVG -->
+    <div class="sunflower">
+        <svg viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="12" fill="#5c3a00"/>
+            <g fill="#ffd700">
+                <ellipse cx="32" cy="10" rx="6" ry="12"/>
+                <ellipse cx="32" cy="54" rx="6" ry="12"/>
+                <ellipse cx="10" cy="32" rx="12" ry="6"/>
+                <ellipse cx="54" cy="32" rx="12" ry="6"/>
+                <ellipse cx="18" cy="18" rx="10" ry="5"/>
+                <ellipse cx="46" cy="18" rx="10" ry="5"/>
+                <ellipse cx="18" cy="46" rx="10" ry="5"/>
+                <ellipse cx="46" cy="46" rx="10" ry="5"/>
+            </g>
+        </svg>
+    </div>
+
+    <h1>Discover the Art of Pysanky</h1>
+    <p>A Ukrainian Egg Decorating Workshop • $30 per participant</p>
+    <p><strong>All proceeds will go towards purchasing life‑saving medical equipment for Ukrainian front‑line defenders.</strong></p>
+</header>
+
+<div class="folk-border"></div>
+
+<div class="container">
+
+<h2>Register for a Class</h2>
+
+<div class="session">
+    <h3>March 22 — 12:00–2:00 PM</h3>
+    <p><strong>Silverwood Presbyterian Church</strong><br>
+    8000 Miami Ave, Madeira, OH 45243</p>
+    <p><strong>Seats remaining: <span id="seats22">Loading...</span></strong></p>
+</div>
+
+<div class="session">
+    <h3>March 29 — 2:00–4:00 PM</h3>
+    <p><strong>Wyoming Fine Arts Center</strong><br>
+    322 Wyoming Ave, Wyoming, OH 45215</p>
+    <p><strong>Seats remaining: <span id="seats29">Loading...</span></strong></p>
+</div>
+
+<h2>Registration Form</h2>
+
+<form id="regForm">
+    <label>Name:</label>
+    <input type="text" id="name" required>
+
+    <label>Email:</label>
+    <input type="email" id="email" required>
+
+    <label>Phone (optional):</label>
+    <input type="text" id="phone">
+
+    <label>Select your class date:</label>
+    <select id="classDate" required>
+        <option value="">Choose one</option>
+        <option value="22">March 22 (Madeira)</option>
+        <option value="29">March 29 (Wyoming Fine Arts Center)</option>
+    </select>
+
+    <label>Number of participants:</label>
+    <input type="number" id="participants" min="1" max="20" required>
+
+    <label>Optional donation (in $5 increments):</label>
+    <select id="donation">
+        <option value="0">$0</option>
+        <option value="5">$5</option>
+        <option value="10">$10</option>
+        <option value="15">$15</option>
+        <option value="20">$20</option>
+        <option value="25">$25</option>
+        <option value="30">$30</option>
+    </select>
+
+    <label>Comments or questions:</label>
+    <textarea id="comments" rows="4"></textarea>
+
+    <button type="submit">Submit Registration</button>
+</form>
+
+<h2>Payment Options</h2>
+
+<div class="payment-box">
+    <p><strong>Venmo:</strong> @Tatyana-Pinyayev</p>
+    <p><strong>PayPal:</strong> Tatyana Pinyayev</p>
+    <p><strong>Zelle:</strong> 513‑607‑8364</p>
+    <p><strong>Contact Email:</strong> t.pinyayev@gmail.com</p>
+</div>
+
+</div>
+
+<script>
+// -----------------------------------------------------
+// LIVE GOOGLE SHEETS DATABASE CONNECTION
+// -----------------------------------------------------
+
+// Your published CSV URL (READ)
+const sheetCSV =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbLIrzbO6tpSCuh85M34gc80OzOciPMNYgI7urYYlo2vDsl-Ku7y7ifvss5iUckaXUK7ZXKxlxTggm/pub?output=csv";
+
+// Your Google Apps Script Web App URL (WRITE)
+const writeURL =
+  "https://script.google.com/macros/s/AKfycbzWA0mP-RoRVfah_7c9xSmVC-0mbX0V_ezxfwZZ9M89zHr3f2TrhG4BESv3UN4S2-Pd/exec";
+
+// Live seat data
+let seats = { "22": 20, "29": 20 };
+
+// Load live seat counts from Google Sheets
+fetch(sheetCSV)
+  .then(res => res.text())
+  .then(text => {
+    const rows = text.split("\n").slice(1);
+    rows.forEach(row => {
+      const [session, remaining] = row.split(",");
+      seats[session.trim()] = parseInt(remaining);
+    });
+    document.getElementById("seats22").textContent = seats["22"];
+    document.getElementById("seats29").textContent = seats["29"];
+  });
+
+// Handle registration
+document.getElementById("regForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  let session = document.getElementById("classDate").value;
+  let qty = parseInt(document.getElementById("participants").value);
+
+  if (qty > seats[session]) {
+    alert("Not enough seats remaining.");
+    return;
+  }
+
+  // Write update to Google Sheets
+  fetch(writeURL, {
+    method: "POST",
+    body: JSON.stringify({ session, qty })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      seats[session] -= qty;
+      document.getElementById("seats22").textContent = seats["22"];
+      document.getElementById("seats29").textContent = seats["29"];
+      alert("Registration successful! A confirmation email will be sent.");
+    } else {
+      alert(data.message);
+    }
+  });
+});
+</script>
+
+</body>
+</html>
