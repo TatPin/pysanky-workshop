@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Registration Successful</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #faf7f2;
+        padding: 40px;
+        text-align: center;
+        color: #333;
+    }
+    h1 { color: #7a1e48; }
+    .box {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 600px;
+        margin: auto;
+        border-left: 6px solid #7a1e48;
+    }
+    .qr-row {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 20px;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Thank You for Registering!</h1>
+
+<div class="box">
+    <p>Your registration has been received.</p>
+    <p>Please complete your payment using one of the options below:</p>
+
+    <div class="qr-row">
+        <svg width="120" height="120">
+            <image href="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=venmo.com/Tatyana-Pinyayev" width="120" height="120"/>
+        </svg>
+
+        <svg width="120" height="120">
+            <image href="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=paypal.me/tatyanapinyayev" width="120" height="120"/>
+        </svg>
+
+        <svg width="120" height="120">
+            <image href="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=5136078364" width="120" height="120"/>
+        </svg>
+    </div>
+
+    <p style="margin-top:20px;">
+        If you have any questions, email <strong>t.pinyayev@gmail.com</strong>.
+    </p>
+</div>
+
+</body>
+</html>
