@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Discover the Art of Pysanky</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -13,58 +12,27 @@
         padding: 0;
         color: #333;
     }
-
-    /* Ukrainian color palette */
-    :root {
-        --ua-blue: #0057b7;
-        --ua-yellow: #ffd700;
-        --ua-red: #7a1e48;
-    }
-
     header {
-        background: var(--ua-blue);
+        background: #7a1e48;
         color: white;
-        padding: 40px 20px 20px;
+        padding: 30px;
         text-align: center;
-        position: relative;
     }
-
-    /* Sunflower graphic (inline SVG) */
-    .sunflower {
-        width: 80px;
-        margin: 0 auto 10px;
-    }
-
-    /* Ukrainian folk pattern border */
-    .folk-border {
-        height: 12px;
-        background-image: repeating-linear-gradient(
-            45deg,
-            var(--ua-yellow) 0,
-            var(--ua-yellow) 10px,
-            var(--ua-blue) 10px,
-            var(--ua-blue) 20px
-        );
-    }
-
-    h1 { margin: 0; font-size: 2.4em; }
-    h2 { color: var(--ua-red); }
-
+    h1 { margin: 0; font-size: 2.2em; }
+    h2 { color: #7a1e48; }
     .container {
         width: 90%;
         max-width: 900px;
         margin: auto;
         padding: 20px;
     }
-
     .session {
         background: white;
         padding: 20px;
         border-radius: 10px;
         margin-bottom: 20px;
-        border-left: 6px solid var(--ua-red);
+        border-left: 6px solid #7a1e48;
     }
-
     label { display: block; margin-top: 10px; }
     input, select, textarea {
         width: 100%;
@@ -73,9 +41,8 @@
         border-radius: 5px;
         border: 1px solid #bbb;
     }
-
     button {
-        background: var(--ua-red);
+        background: #7a1e48;
         color: white;
         padding: 12px 20px;
         border: none;
@@ -85,12 +52,11 @@
         font-size: 1em;
     }
     button:hover { background: #5c1636; }
-
     .payment-box {
         background: #fff;
         padding: 20px;
         border-radius: 10px;
-        border-left: 6px solid var(--ua-red);
+        border-left: 6px solid #7a1e48;
     }
 </style>
 </head>
@@ -98,29 +64,10 @@
 <body>
 
 <header>
-    <!-- Sunflower SVG -->
-    <div class="sunflower">
-        <svg viewBox="0 0 64 64">
-            <circle cx="32" cy="32" r="12" fill="#5c3a00"/>
-            <g fill="#ffd700">
-                <ellipse cx="32" cy="10" rx="6" ry="12"/>
-                <ellipse cx="32" cy="54" rx="6" ry="12"/>
-                <ellipse cx="10" cy="32" rx="12" ry="6"/>
-                <ellipse cx="54" cy="32" rx="12" ry="6"/>
-                <ellipse cx="18" cy="18" rx="10" ry="5"/>
-                <ellipse cx="46" cy="18" rx="10" ry="5"/>
-                <ellipse cx="18" cy="46" rx="10" ry="5"/>
-                <ellipse cx="46" cy="46" rx="10" ry="5"/>
-            </g>
-        </svg>
-    </div>
-
     <h1>Discover the Art of Pysanky</h1>
     <p>A Ukrainian Egg Decorating Workshop • $30 per participant</p>
-    <p><strong>All proceeds will go towards purchasing life‑saving medical equipment for Ukrainian front‑line defenders.</strong></p>
+    <p><strong>All proceeds support life‑saving medical equipment for Ukrainian front‑line defenders.</strong></p>
 </header>
-
-<div class="folk-border"></div>
 
 <div class="container">
 
