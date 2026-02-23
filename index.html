@@ -185,6 +185,7 @@ document.getElementById("regForm").addEventListener("submit", function(event) {
 
   fetch(writeURL, {
     method: "POST",
+    headers: { "Content-Type": "application/json" },   // ✅ FIXED
     body: JSON.stringify(payload)
   })
   .then(res => res.json())
@@ -200,3 +201,4 @@ document.getElementById("regForm").addEventListener("submit", function(event) {
 
 </body>
 </html>
+
