@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Discover the Art of Pysanky</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -58,6 +59,11 @@
         border-radius: 10px;
         border-left: 6px solid #7a1e48;
     }
+    .qr-row {
+        display: flex;
+        gap: 20px;
+        margin-top: 10px;
+    }
 </style>
 </head>
 
@@ -66,7 +72,7 @@
 <header>
     <h1>Discover the Art of Pysanky</h1>
     <p>A Ukrainian Egg Decorating Workshop • $30 per participant</p>
-    <p><strong>All proceeds support life‑saving medical equipment for Ukrainian front‑line defenders.</strong></p>
+    <p><strong>All proceeds will go towards purchasing life‑saving medical equipment for Ukrainian front‑line defenders.</strong></p>
 </header>
 
 <div class="container">
@@ -132,28 +138,39 @@
     <p><strong>Venmo:</strong> @Tatyana-Pinyayev</p>
     <p><strong>PayPal:</strong> Tatyana Pinyayev</p>
     <p><strong>Zelle:</strong> 513‑607‑8364</p>
-    <p><strong>Contact Email:</strong> t.pinyayev@gmail.com</p>
+
+    <div class="qr-row">
+        <!-- Venmo QR -->
+        <svg width="120" height="120">
+            <image href="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=venmo.com/Tatyana-Pinyayev" width="120" height="120"/>
+        </svg>
+
+        <!-- PayPal QR -->
+        <svg width="120" height="120">
+            <image href="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=paypal.me/tatyanapinyayev" width="120" height="120"/>
+        </svg>
+
+        <!-- Zelle QR -->
+        <svg width="120" height="120">
+            <image href="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=5136078364" width="120" height="120"/>
+        </svg>
+    </div>
 </div>
 
 </div>
 
 <script>
-// -----------------------------------------------------
-// LIVE GOOGLE SHEETS DATABASE CONNECTION
-// -----------------------------------------------------
-
-// Your published CSV URL (READ)
+// READ seats
 const sheetCSV =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbLIrzbO6tpSCuh85M34gc80OzOciPMNYgI7urYYlo2vDsl-Ku7y7ifvss5iUckaXUK7ZXKxlxTggm/pub?output=csv";
 
-// Your Google Apps Script Web App URL (WRITE)
+// WRITE registrations
 const writeURL =
   "https://script.google.com/macros/s/AKfycbzWA0mP-RoRVfah_7c9xSmVC-0mbX0V_ezxfwZZ9M89zHr3f2TrhG4BESv3UN4S2-Pd/exec";
 
-// Live seat data
 let seats = { "22": 20, "29": 20 };
 
-// Load live seat counts from Google Sheets
+// Load live seat counts
 fetch(sheetCSV)
   .then(res => res.text())
   .then(text => {
@@ -178,18 +195,24 @@ document.getElementById("regForm").addEventListener("submit", function(event) {
     return;
   }
 
-  // Write update to Google Sheets
+  const payload = {
+    session,
+    qty,
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    phone: document.getElementById("phone").value,
+    donation: document.getElementById("donation").value,
+    comments: document.getElementById("comments").value
+  };
+
   fetch(writeURL, {
     method: "POST",
-    body: JSON.stringify({ session, qty })
+    body: JSON.stringify(payload)
   })
   .then(res => res.json())
   .then(data => {
     if (data.success) {
-      seats[session] -= qty;
-      document.getElementById("seats22").textContent = seats["22"];
-      document.getElementById("seats29").textContent = seats["29"];
-      alert("Registration successful! A confirmation email will be sent.");
+      window.location.href = "success.html";
     } else {
       alert(data.message);
     }
