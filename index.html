@@ -4,39 +4,138 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Discover the Art of Pysanky</title>
+
 <style>
-body { font-family: Arial, sans-serif; background:#f7f4ef; margin:0; padding:20px; }
-.container { max-width:800px; margin:auto; }
-h1 { text-align:center; }
-.session { background:white; padding:20px; border-radius:8px; margin-bottom:20px; }
-button { padding:10px 15px; cursor:pointer; }
-input, select { width:100%; padding:8px; margin:8px 0; }
-.seats { font-weight:bold; }
-.full { color:red; font-weight:bold; }
-.total { font-weight:bold; font-size:18px; margin-top:10px; }
+body {
+  font-family: Arial, sans-serif;
+  background: #f6f3ee;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+}
+
+h1 {
+  text-align: center;
+  font-size: 42px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+.content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.left {
+  flex: 1;
+  min-width: 300px;
+}
+
+.right {
+  flex: 1;
+  min-width: 300px;
+}
+
+img.main-image {
+  width: 100%;
+  border-radius: 10px;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+button {
+  background: #9c96c9;
+  color: white;
+  padding: 12px;
+  font-size: 18px;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.seats {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #a65c00;
+}
+
+.total {
+  font-weight: bold;
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+.payment {
+  margin-top: 20px;
+}
+
+.qr {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.qr img {
+  width: 180px;
+}
+
+footer {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 14px;
+}
 </style>
 </head>
+
 <body>
+
 <div class="container">
 
 <h1>Discover the Art of Pysanky</h1>
-<p><strong>Cost:</strong> $30 per person</p>
+<p class="subtitle">
+Join our hands-on workshop and learn traditional Ukrainian egg decorating using wax-resist methods.
+</p>
 
-<div class="session">
-<h2>March 14 | 12:00 PM</h2>
-<p>Madeira Silverwood Presbyterian Church<br>
-8000 Miami Ave, Madeira, OH 45243</p>
+<div class="content">
+
+<div class="left">
+<img src="https://tatpin.github.io/pysanky-workshop/a_digital_screenshot_displays_a_sign_up_page_for.png" class="main-image">
+
+<h3>March 14 at 12:00 PM</h3>
+<p>
+Madeira Silverwood Presbyterian Church<br>
+8000 Miami Ave,<br>
+Madeira, OH 45243
+</p>
+
 <p class="seats" id="seatDisplay">Checking seats...</p>
-</div>
 
-<h2>Register</h2>
 <form id="registrationForm">
 <input type="text" name="name" placeholder="Full Name" required>
 <input type="email" name="email" placeholder="Email Address" required>
 
-<label>Optional Donation (in $5 increments)</label>
+<label>Optional Donation ($5 increments)</label>
 <select name="donation" id="donationSelect">
-<option value="0">No Donation</option>
+<option value="0">$0</option>
 <option value="5">$5</option>
 <option value="10">$10</option>
 <option value="15">$15</option>
@@ -54,12 +153,29 @@ input, select { width:100%; padding:8px; margin:8px 0; }
 <button type="submit">Register</button>
 </form>
 
-<h2>Payment Options</h2>
+<div class="payment">
+<h3>Payment Options</h3>
 <p>
-<a href="https://www.paypal.com/paypalme/TatyanaPinyayev" target="_blank">Pay with PayPal</a><br>
-<a href="https://venmo.com/Tatyana-Pinyayev" target="_blank">Pay with Venmo</a><br>
+PayPal: Tatyana Pinyayev<br>
+Venmo: @Tatyana-Pinyayev<br>
 Zelle: 513-607-8364
 </p>
+</div>
+
+</div>
+
+<div class="right">
+<div class="qr">
+<h3>Scan to Register</h3>
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://tatpin.github.io/pysanky-workshop/" alt="QR Code">
+</div>
+</div>
+
+</div>
+
+<footer>
+You will receive a confirmation email after registering.
+</footer>
 
 </div>
 
@@ -71,52 +187,50 @@ const scriptURL = "https://script.google.com/macros/s/AKfycbwSeHvvWMoPWVPMeUPsVe
 const donationSelect = document.getElementById("donationSelect");
 const totalDisplay = document.getElementById("totalDisplay");
 
-// Update total automatically
 function updateTotal() {
-    const donation = parseInt(donationSelect.value);
-    const total = 30 + donation;
-    totalDisplay.innerText = "Total Due: $" + total;
+  const donation = parseInt(donationSelect.value);
+  const total = 30 + donation;
+  totalDisplay.innerText = "Total Due: $" + total;
 }
-
 donationSelect.addEventListener("change", updateTotal);
 updateTotal();
 
-// Load real seat count from Google Sheets
 async function loadSeats() {
-    const response = await fetch(scriptURL + "?action=getSeats");
-    const data = await response.json();
-    const taken = data[className] || 0;
-    const remaining = seatLimit - taken;
+  const response = await fetch(scriptURL + "?action=getSeats");
+  const data = await response.json();
+  const taken = data[className] || 0;
+  const remaining = seatLimit - taken;
 
-    const seatDisplay = document.getElementById("seatDisplay");
-    if (remaining <= 0) {
-        seatDisplay.innerHTML = "Class Full";
-        seatDisplay.classList.add("full");
-        document.querySelector("button").disabled = true;
-    } else {
-        seatDisplay.innerHTML = remaining + " seats remaining";
-    }
+  const seatDisplay = document.getElementById("seatDisplay");
+
+  if (remaining <= 0) {
+    seatDisplay.innerText = "Class Full";
+    document.querySelector("button").disabled = true;
+  } else {
+    seatDisplay.innerText = remaining + " seats remaining";
+  }
 }
 
-// Submit registration
 const form = document.getElementById("registrationForm");
+
 form.addEventListener("submit", async function(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-    data.session = className;
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
+  data.session = className;
 
-    const response = await fetch(scriptURL, {
-        method: "POST",
-        body: JSON.stringify(data)
-    });
+  const response = await fetch(scriptURL, {
+    method: "POST",
+    body: JSON.stringify(data)
+  });
 
-    const result = await response.text();
-    alert(result);
-    form.reset();
-    updateTotal();
-    loadSeats();
+  const result = await response.text();
+  alert(result);
+
+  form.reset();
+  updateTotal();
+  loadSeats();
 });
 
 loadSeats();
