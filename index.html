@@ -2,201 +2,124 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Discover the Art of Pysanky</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #faf7f2;
-        margin: 0;
-        padding: 0;
-        color: #333;
-    }
-    header {
-        background: #7a1e48;
-        color: white;
-        padding: 30px;
-        text-align: center;
-    }
-    h1 { margin: 0; font-size: 2.2em; }
-    h2 { color: #7a1e48; }
-    .container {
-        width: 90%;
-        max-width: 900px;
-        margin: auto;
-        padding: 20px;
-    }
-    .session {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        border-left: 6px solid #7a1e48;
-    }
-    label { display: block; margin-top: 10px; }
-    input, select, textarea {
-        width: 100%;
-        padding: 10px;
-        margin-top: 5px;
-        border-radius: 5px;
-        border: 1px solid #bbb;
-    }
-    button {
-        background: #7a1e48;
-        color: white;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 5px;
-        margin-top: 20px;
-        cursor: pointer;
-        font-size: 1em;
-    }
-    button:hover { background: #5c1636; }
-    .payment-box {
-        background: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        border-left: 6px solid #7a1e48;
-    }
+body { font-family: Arial, sans-serif; background:#f7f4ef; margin:0; padding:20px; }
+.container { max-width:800px; margin:auto; }
+h1 { text-align:center; }
+.session { background:white; padding:20px; border-radius:8px; margin-bottom:20px; }
+button { padding:10px 15px; cursor:pointer; }
+input, select { width:100%; padding:8px; margin:8px 0; }
+.seats { font-weight:bold; }
+.full { color:red; font-weight:bold; }
+.total { font-weight:bold; font-size:18px; margin-top:10px; }
 </style>
 </head>
-
 <body>
-
-<header>
-    <h1>Discover the Art of Pysanky</h1>
-    <p>A Ukrainian Egg Decorating Workshop • $30 per participant</p>
-    <p><strong>All proceeds will go towards purchasing life‑saving medical equipment for Ukrainian front‑line defenders.</strong></p>
-</header>
-
 <div class="container">
 
-<h2>Register for a Class</h2>
+<h1>Discover the Art of Pysanky</h1>
+<p><strong>Cost:</strong> $30 per person</p>
 
 <div class="session">
-    <h3>March 22 — 12:00–2:00 PM</h3>
-    <p><strong>Silverwood Presbyterian Church</strong><br>
-    8000 Miami Ave, Madeira, OH 45243</p>
-    <p><strong>Seats remaining: <span id="seats22">Loading...</span></strong></p>
+<h2>March 14 | 12:00 PM</h2>
+<p>Madeira Silverwood Presbyterian Church<br>
+8000 Miami Ave, Madeira, OH 45243</p>
+<p class="seats" id="seatDisplay">Checking seats...</p>
 </div>
 
-<div class="session">
-    <h3>March 29 — 2:00–4:00 PM</h3>
-    <p><strong>Wyoming Fine Arts Center</strong><br>
-    322 Wyoming Ave, Wyoming, OH 45215</p>
-    <p><strong>Seats remaining: <span id="seats29">Loading...</span></strong></p>
-</div>
+<h2>Register</h2>
+<form id="registrationForm">
+<input type="text" name="name" placeholder="Full Name" required>
+<input type="email" name="email" placeholder="Email Address" required>
 
-<h2>Registration Form</h2>
+<label>Optional Donation (in $5 increments)</label>
+<select name="donation" id="donationSelect">
+<option value="0">No Donation</option>
+<option value="5">$5</option>
+<option value="10">$10</option>
+<option value="15">$15</option>
+<option value="20">$20</option>
+<option value="25">$25</option>
+<option value="30">$30</option>
+<option value="35">$35</option>
+<option value="40">$40</option>
+<option value="45">$45</option>
+<option value="50">$50</option>
+</select>
 
-<form id="regForm">
-    <label>Name:</label>
-    <input type="text" id="name" required>
+<p class="total" id="totalDisplay">Total Due: $30</p>
 
-    <label>Email:</label>
-    <input type="email" id="email" required>
-
-    <label>Phone (optional):</label>
-    <input type="text" id="phone">
-
-    <label>Select your class date:</label>
-    <select id="classDate" required>
-        <option value="">Choose one</option>
-        <option value="22">March 22 (Madeira)</option>
-        <option value="29">March 29 (Wyoming Fine Arts Center)</option>
-    </select>
-
-    <label>Number of participants:</label>
-    <input type="number" id="participants" min="1" max="20" required>
-
-    <label>Optional donation (in $5 increments):</label>
-    <select id="donation">
-        <option value="0">$0</option>
-        <option value="5">$5</option>
-        <option value="10">$10</option>
-        <option value="15">$15</option>
-        <option value="20">$20</option>
-        <option value="25">$25</option>
-        <option value="30">$30</option>
-    </select>
-
-    <label>Comments or questions:</label>
-    <textarea id="comments" rows="4"></textarea>
-
-    <button type="submit">Submit Registration</button>
+<button type="submit">Register</button>
 </form>
 
 <h2>Payment Options</h2>
-
-<div class="payment-box">
-    <p><strong>Venmo:</strong> @Tatyana-Pinyayev</p>
-    <p><strong>PayPal:</strong> Tatyana Pinyayev</p>
-    <p><strong>Zelle:</strong> 513‑607‑8364</p>
-</div>
+<p>
+<a href="https://www.paypal.com/paypalme/TatyanaPinyayev" target="_blank">Pay with PayPal</a><br>
+<a href="https://venmo.com/Tatyana-Pinyayev" target="_blank">Pay with Venmo</a><br>
+Zelle: 513-607-8364
+</p>
 
 </div>
 
 <script>
-// READ seats
-const sheetCSV =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbLIrzbO6tpSCuh85M34gc80OzOciPMNYgI7urYYlo2vDsl-Ku7y7ifvss5iUckaXUK7ZXKxlxTggm/pub?output=csv";
+const seatLimit = 15;
+const className = "March14";
+const scriptURL = "https://script.google.com/macros/s/AKfycbwSeHvvWMoPWVPMeUPsVeevBDW90i17LIGHV1Y_38KmkdntH6zjIXdlOJW2kSIUHGMczQ/exec";
 
-// WRITE registrations
-const writeURL =
-  "https://script.google.com/macros/s/AKfycbzWA0mP-RoRVfah_7c9xSmVC-0mbX0V_ezxfwZZ9M89zHr3f2TrhG4BESv3UN4S2-Pd/exec";
+const donationSelect = document.getElementById("donationSelect");
+const totalDisplay = document.getElementById("totalDisplay");
 
-let seats = { "22": 20, "29": 20 };
+// Update total automatically
+function updateTotal() {
+    const donation = parseInt(donationSelect.value);
+    const total = 30 + donation;
+    totalDisplay.innerText = "Total Due: $" + total;
+}
 
-// Load live seat counts
-fetch(sheetCSV)
-  .then(res => res.text())
-  .then(text => {
-    const rows = text.split("\n").slice(1);
-    rows.forEach(row => {
-      const [session, remaining] = row.split(",");
-      seats[session.trim()] = parseInt(remaining);
-    });
-    document.getElementById("seats22").textContent = seats["22"];
-    document.getElementById("seats29").textContent = seats["29"];
-  });
+donationSelect.addEventListener("change", updateTotal);
+updateTotal();
 
-// Handle registration
-document.getElementById("regForm").addEventListener("submit", function(event) {
-  event.preventDefault();
+// Load real seat count from Google Sheets
+async function loadSeats() {
+    const response = await fetch(scriptURL + "?action=getSeats");
+    const data = await response.json();
+    const taken = data[className] || 0;
+    const remaining = seatLimit - taken;
 
-  let session = document.getElementById("classDate").value;
-  let qty = parseInt(document.getElementById("participants").value);
-
-  if (qty > seats[session]) {
-    alert("Not enough seats remaining.");
-    return;
-  }
-
-  const payload = {
-    session,
-    qty,
-    name: document.getElementById("name").value,
-    email: document.getElementById("email").value,
-    phone: document.getElementById("phone").value,
-    donation: document.getElementById("donation").value,
-    comments: document.getElementById("comments").value
-  };
-
-  fetch(writeURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },   // ⭐ FIXED
-    body: JSON.stringify(payload)
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      window.location.href = "success.html";
+    const seatDisplay = document.getElementById("seatDisplay");
+    if (remaining <= 0) {
+        seatDisplay.innerHTML = "Class Full";
+        seatDisplay.classList.add("full");
+        document.querySelector("button").disabled = true;
     } else {
-      alert(data.message);
+        seatDisplay.innerHTML = remaining + " seats remaining";
     }
-  });
+}
+
+// Submit registration
+const form = document.getElementById("registrationForm");
+form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    data.session = className;
+
+    const response = await fetch(scriptURL, {
+        method: "POST",
+        body: JSON.stringify(data)
+    });
+
+    const result = await response.text();
+    alert(result);
+    form.reset();
+    updateTotal();
+    loadSeats();
 });
+
+loadSeats();
 </script>
 
 </body>
