@@ -20,13 +20,11 @@ body {
 
 h1 {
   text-align: center;
-  font-size: 42px;
-  margin-bottom: 10px;
+  font-size: 40px;
 }
 
 .subtitle {
   text-align: center;
-  font-size: 18px;
   margin-bottom: 30px;
 }
 
@@ -36,17 +34,12 @@ h1 {
   gap: 30px;
 }
 
-.left {
+.left, .right {
   flex: 1;
   min-width: 300px;
 }
 
-.right {
-  flex: 1;
-  min-width: 300px;
-}
-
-img.main-image {
+.main-image {
   width: 100%;
   border-radius: 10px;
 }
@@ -69,8 +62,8 @@ button {
   border-radius: 6px;
 }
 
-button:hover {
-  opacity: 0.9;
+button:disabled {
+  background: #aaa;
 }
 
 .seats {
@@ -82,11 +75,6 @@ button:hover {
 .total {
   font-weight: bold;
   margin-top: 10px;
-  font-size: 18px;
-}
-
-.payment {
-  margin-top: 20px;
 }
 
 .qr {
@@ -95,13 +83,12 @@ button:hover {
 }
 
 .qr img {
-  width: 180px;
+  width: 200px;
 }
 
 footer {
   margin-top: 40px;
   text-align: center;
-  font-size: 14px;
 }
 </style>
 </head>
@@ -112,22 +99,25 @@ footer {
 
 <h1>Discover the Art of Pysanky</h1>
 <p class="subtitle">
-Join our hands-on workshop and learn traditional Ukrainian egg decorating using wax-resist methods.
+Join our hands-on workshop and learn traditional Ukrainian egg decorating.
 </p>
 
 <div class="content">
 
 <div class="left">
-<img src="https://tatpin.github.io/pysanky-workshop/a_digital_screenshot_displays_a_sign_up_page_for.png" class="main-image">
+
+<!-- FIXED IMAGE PATH -->
+<img src="./pysanky.png" class="main-image" 
+     onerror="this.style.display='none'">
 
 <h3>March 14 at 12:00 PM</h3>
 <p>
 Madeira Silverwood Presbyterian Church<br>
-8000 Miami Ave,<br>
+8000 Miami Ave<br>
 Madeira, OH 45243
 </p>
 
-<p class="seats" id="seatDisplay">Checking seats...</p>
+<p class="seats" id="seatDisplay">Loading seats...</p>
 
 <form id="registrationForm">
 <input type="text" name="name" placeholder="Full Name" required>
@@ -153,15 +143,6 @@ Madeira, OH 45243
 <button type="submit">Register</button>
 </form>
 
-<div class="payment">
-<h3>Payment Options</h3>
-<p>
-PayPal: Tatyana Pinyayev<br>
-Venmo: @Tatyana-Pinyayev<br>
-Zelle: 513-607-8364
-</p>
-</div>
-
 </div>
 
 <div class="right">
@@ -174,40 +155,53 @@ Zelle: 513-607-8364
 </div>
 
 <footer>
-You will receive a confirmation email after registering.
+PayPal: Tatyana Pinyayev<br>
+Venmo: @Tatyana-Pinyayev<br>
+Zelle: 513-607-8364
 </footer>
 
 </div>
 
 <script>
+
 const seatLimit = 15;
 const className = "March14";
-const scriptURL = "https://script.google.com/macros/s/AKfycbwSeHvvWMoPWVPMeUPsVeevBDW90i17LIGHV1Y_38KmkdntH6zjIXdlOJW2kSIUHGMczQ/exec";
+
+/* 🔴 PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW */
+const scriptURL = "PASTE_YOUR_GOOGLE_SCRIPT_URL_HERE";
 
 const donationSelect = document.getElementById("donationSelect");
 const totalDisplay = document.getElementById("totalDisplay");
 
 function updateTotal() {
   const donation = parseInt(donationSelect.value);
-  const total = 30 + donation;
-  totalDisplay.innerText = "Total Due: $" + total;
+  totalDisplay.innerText = "Total Due: $" + (30 + donation);
 }
+
 donationSelect.addEventListener("change", updateTotal);
 updateTotal();
 
+/* SAFE SEAT LOADING WITH ERROR HANDLING */
 async function loadSeats() {
-  const response = await fetch(scriptURL + "?action=getSeats");
-  const data = await response.json();
-  const taken = data[className] || 0;
-  const remaining = seatLimit - taken;
-
   const seatDisplay = document.getElementById("seatDisplay");
 
-  if (remaining <= 0) {
-    seatDisplay.innerText = "Class Full";
-    document.querySelector("button").disabled = true;
-  } else {
-    seatDisplay.innerText = remaining + " seats remaining";
+  try {
+    const response = await fetch(scriptURL + "?action=getSeats");
+    const data = await response.json();
+
+    const taken = data[className] || 0;
+    const remaining = seatLimit - taken;
+
+    if (remaining <= 0) {
+      seatDisplay.innerText = "Class Full";
+      document.querySelector("button").disabled = true;
+    } else {
+      seatDisplay.innerText = remaining + " seats remaining";
+    }
+
+  } catch (error) {
+    seatDisplay.innerText = "Seat count unavailable (check script URL)";
+    console.error("Seat load error:", error);
   }
 }
 
@@ -216,24 +210,31 @@ const form = document.getElementById("registrationForm");
 form.addEventListener("submit", async function(e) {
   e.preventDefault();
 
-  const formData = new FormData(form);
-  const data = Object.fromEntries(formData.entries());
-  data.session = className;
+  try {
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    data.session = className;
 
-  const response = await fetch(scriptURL, {
-    method: "POST",
-    body: JSON.stringify(data)
-  });
+    const response = await fetch(scriptURL, {
+      method: "POST",
+      body: JSON.stringify(data)
+    });
 
-  const result = await response.text();
-  alert(result);
+    const result = await response.text();
+    alert(result);
 
-  form.reset();
-  updateTotal();
-  loadSeats();
+    form.reset();
+    updateTotal();
+    loadSeats();
+
+  } catch (error) {
+    alert("Registration failed. Check your Google Script deployment.");
+    console.error("Submit error:", error);
+  }
 });
 
 loadSeats();
+
 </script>
 
 </body>
