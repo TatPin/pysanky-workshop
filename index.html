@@ -166,80 +166,80 @@ Cash (registration is still required)
 <script>
 
 const seatLimit = 15;
-const className = "March14";
+const sessionName = "march14"; // lowercase for safety
 
-/* 🔴 PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW */
-const scriptURL = "https://script.google.com/macros/s/AKfycbwSeHvvWMoPWVPMeUPsVeevBDW90i17LIGHV1Y_38KmkdntH6zjIXdlOJW2kSIUHGMczQ/exec";
+function doGet(e) {
+  const sheet = SpreadsheetApp.getActive().getSheetByName("Registrations");
+  const data = sheet.getDataRange().getValues();
+  let count = 0;
 
-const donationSelect = document.getElementById("donationSelect");
-const totalDisplay = document.getElementById("totalDisplay");
-
-function updateTotal() {
-  const donation = parseInt(donationSelect.value);
-  totalDisplay.innerText = "Total Due: $" + (30 + donation);
-}
-
-donationSelect.addEventListener("change", updateTotal);
-updateTotal();
-
-/* SAFE SEAT LOADING WITH ERROR HANDLING */
-async function loadSeats() {
-  const seatDisplay = document.getElementById("seatDisplay");
-
-  try {
-    const response = await fetch(scriptURL + "?action=getSeats");
-    const data = await response.json();
-
-    const taken = data[className] || 0;
-    const remaining = seatLimit - taken;
-
-    if (remaining <= 0) {
-      seatDisplay.innerText = "Class Full";
-      document.querySelector("button").disabled = true;
-    } else {
-      seatDisplay.innerText = remaining + " seats remaining";
+  for (let i = 1; i < data.length; i++) {
+    const sessionValue = String(data[i][3]).trim().toLowerCase();
+    if (sessionValue === sessionName) {
+      count++;
     }
-
-  } catch (error) {
-    seatDisplay.innerText = "Seat count unavailable (check script URL)";
-    console.error("Seat load error:", error);
   }
+
+  const output = ContentService
+    .createTextOutput(JSON.stringify({ March14: count }))
+    .setMimeType(ContentService.MimeType.JSON);
+
+  return output;
 }
 
-const form = document.getElementById("registrationForm");
+function doPost(e) {
+  const sheet = SpreadsheetApp.getActive().getSheetByName("Registrations");
+  const data = JSON.parse(e.postData.contents);
 
-form.addEventListener("submit", async function(e) {
-  e.preventDefault();
+  const rows = sheet.getDataRange().getValues();
+  let count = 0;
 
-  try {
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-    data.session = className;
-
-    const response = await fetch(scriptURL, {
-      method: "POST",
-      body: JSON.stringify(data)
-    });
-
-    const result = await response.text();
-    alert(result);
-
-    form.reset();
-    updateTotal();
-    loadSeats();
-
-  } catch (error) {
-    alert("Registration failed. Check your Google Script deployment.");
-    console.error("Submit error:", error);
+  for (let i = 1; i < rows.length; i++) {
+    const sessionValue = String(rows[i][3]).trim().toLowerCase();
+    if (sessionValue === sessionName) {
+      count++;
+    }
   }
-});
 
-loadSeats();
+  if (count >= seatLimit) {
+    return ContentService
+      .createTextOutput("Class is full.");
+  }
+
+  const donation = parseInt(data.donation || 0);
+  const total = 30 + donation;
+
+  sheet.appendRow([
+    new Date(),
+    data.name,
+    data.email,
+    data.session,
+    donation,
+    total
+  ]);
+
+  MailApp.sendEmail({
+    to: data.email,
+    subject: "Pysanky Class Registration Confirmation",
+    htmlBody: `
+      <h2>You're Registered!</h2>
+      <p><strong>Date:</strong> March 14 at 12:00 PM</p>
+      <p><strong>Location:</strong><br>
+      Madeira Silverwood Presbyterian Church<br>
+      8000 Miami Ave, Madeira, OH 45243</p>
+      <p><strong>Total Due:</strong> $${total}</p>
+    `
+  });
+
+  return ContentService
+    .createTextOutput("Registration successful! Check your email.");
+}
 
 </script>
 
 </body>
 </html>
+
 
 
 
