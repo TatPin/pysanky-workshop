@@ -106,8 +106,7 @@ Join our hands-on workshop and learn traditional Ukrainian egg decorating.
 
 <div class="left">
 
-<!-- FIXED IMAGE PATH -->
-<img src="./pysanky.png" class="main-image" 
+<img src="./pysanky.png" class="main-image"
      onerror="this.style.display='none'">
 
 <h3>March 22 at 12:00 PM</h3>
@@ -140,7 +139,7 @@ Madeira, OH 45243
 
 <p class="total" id="totalDisplay">Total Due: $30</p>
 
-<button type="submit">Register</button>
+<button type="submit" id="registerBtn">Register</button>
 </form>
 
 </div>
@@ -162,15 +161,18 @@ Cash (registration is still required)
 </footer>
 
 </div>
-<p id="seatCount">Checking seats...</p>
 
-<button id="registerBtn" type="submit">
-  Register Now
-</button>
-  
 <script>
 
 const scriptURL = "https://script.google.com/macros/s/AKfycbwSeHvvWMoPWVPMeUPsVeevBDW90i17LIGHV1Y_38KmkdntH6zjIXdlOJW2kSIUHGMczQ/exec";
+const seatLimit = 15;
+
+// Update total when donation changes
+document.getElementById("donationSelect").addEventListener("change", function() {
+  const donation = parseInt(this.value);
+  document.getElementById("totalDisplay").innerText =
+    "Total Due: $" + (30 + donation);
+});
 
 async function checkSeats() {
   try {
@@ -178,8 +180,7 @@ async function checkSeats() {
     const data = await response.json();
 
     const seatsRemaining = data.seatsRemaining;
-
-    const seatDisplay = document.getElementById("seatCount");
+    const seatDisplay = document.getElementById("seatDisplay");
 
     if (seatsRemaining <= 0) {
       seatDisplay.innerHTML = "❌ This class is full.";
@@ -189,10 +190,36 @@ async function checkSeats() {
     }
 
   } catch (error) {
-    document.getElementById("seatCount").innerHTML =
-      "Seat count unavailable (check script URL)";
+    document.getElementById("seatDisplay").innerHTML =
+      "Seat count unavailable";
   }
 }
+
+document.getElementById("registrationForm")
+.addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const formData = new FormData(this);
+
+  const data = {
+    name: formData.get("name"),
+    email: formData.get("email"),
+    donation: formData.get("donation")
+  };
+
+  const response = await fetch(scriptURL, {
+    method: "POST",
+    body: JSON.stringify(data)
+  });
+
+  const result = await response.text();
+  alert(result);
+
+  this.reset();
+  document.getElementById("totalDisplay").innerText = "Total Due: $30";
+
+  checkSeats();
+});
 
 window.onload = checkSeats;
 
@@ -200,10 +227,3 @@ window.onload = checkSeats;
 
 </body>
 </html>
-
-
-
-
-
-
-
