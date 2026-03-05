@@ -162,83 +162,45 @@ Cash (registration is still required)
 </footer>
 
 </div>
+<p id="seatCount">Checking seats...</p>
 
+<button id="registerBtn" type="submit">
+  Register Now
+</button>
+  
 <script>
 
-const seatLimit = 15;
-const sessionName = "march14"; // lowercase for safety
+const scriptURL = "https://script.google.com/macros/s/AKfycbwSeHvvWMoPWVPMeUPsVeevBDW90i17LIGHV1Y_38KmkdntH6zjIXdlOJW2kSIUHGMczQ/exec";
 
-function doGet(e) {
-  const sheet = SpreadsheetApp.getActive().getSheetByName("Registrations");
-  const data = sheet.getDataRange().getValues();
-  let count = 0;
+async function checkSeats() {
+  try {
+    const response = await fetch(scriptURL);
+    const data = await response.json();
 
-  for (let i = 1; i < data.length; i++) {
-    const sessionValue = String(data[i][3]).trim().toLowerCase();
-    if (sessionValue === sessionName) {
-      count++;
+    const seatsRemaining = data.seatsRemaining;
+
+    const seatDisplay = document.getElementById("seatCount");
+
+    if (seatsRemaining <= 0) {
+      seatDisplay.innerHTML = "❌ This class is full.";
+      document.getElementById("registerBtn").disabled = true;
+    } else {
+      seatDisplay.innerHTML = "Seats remaining: " + seatsRemaining;
     }
+
+  } catch (error) {
+    document.getElementById("seatCount").innerHTML =
+      "Seat count unavailable (check script URL)";
   }
-
-  const output = ContentService
-    .createTextOutput(JSON.stringify({ March14: count }))
-    .setMimeType(ContentService.MimeType.JSON);
-
-  return output;
 }
 
-function doPost(e) {
-  const sheet = SpreadsheetApp.getActive().getSheetByName("Registrations");
-  const data = JSON.parse(e.postData.contents);
-
-  const rows = sheet.getDataRange().getValues();
-  let count = 0;
-
-  for (let i = 1; i < rows.length; i++) {
-    const sessionValue = String(rows[i][3]).trim().toLowerCase();
-    if (sessionValue === sessionName) {
-      count++;
-    }
-  }
-
-  if (count >= seatLimit) {
-    return ContentService
-      .createTextOutput("Class is full.");
-  }
-
-  const donation = parseInt(data.donation || 0);
-  const total = 30 + donation;
-
-  sheet.appendRow([
-    new Date(),
-    data.name,
-    data.email,
-    data.session,
-    donation,
-    total
-  ]);
-
-  MailApp.sendEmail({
-    to: data.email,
-    subject: "Pysanky Class Registration Confirmation",
-    htmlBody: `
-      <h2>You're Registered!</h2>
-      <p><strong>Date:</strong> March 14 at 12:00 PM</p>
-      <p><strong>Location:</strong><br>
-      Madeira Silverwood Presbyterian Church<br>
-      8000 Miami Ave, Madeira, OH 45243</p>
-      <p><strong>Total Due:</strong> $${total}</p>
-    `
-  });
-
-  return ContentService
-    .createTextOutput("Registration successful! Check your email.");
-}
+window.onload = checkSeats;
 
 </script>
 
 </body>
 </html>
+
 
 
 
