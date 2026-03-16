@@ -66,16 +66,15 @@ button:disabled {
   background: #aaa;
 }
 
-.notice {
-  font-weight: bold;
-  color: #a00000;
-  margin-bottom: 10px;
-}
-
 .seats {
   margin-top: 10px;
   font-weight: bold;
   color: #a65c00;
+}
+
+.total {
+  font-weight: bold;
+  margin-top: 10px;
 }
 
 .qr {
@@ -101,25 +100,24 @@ footer {
 <h1>Discover the Art of Pysanky</h1>
 
 <p class="subtitle">
-The March 22 workshop is now full.<br>
-Join the waitlist for our **April 12 workshop at 12 PM**.
+March 22 class is full.<br>
+Join the waitlist for the **April 12 workshop at 12 PM**.
 </p>
 
 <div class="content">
 
 <div class="left">
 
-<img src="./pysanky.png" class="main-image" onerror="this.style.display='none'">
+<img src="./pysanky.png" class="main-image"
+     onerror="this.style.display='none'">
 
-<h3>Waitlist — April 12 at 12:00 PM</h3>
+<h3>April 12 Waitlist</h3>
 
 <p>
 Madeira Silverwood Presbyterian Church<br>
 8000 Miami Ave<br>
 Madeira, OH 45243
 </p>
-
-<p class="notice">March 22 class is FULL</p>
 
 <p class="seats" id="waitlistDisplay">Checking waitlist spots...</p>
 
@@ -128,6 +126,14 @@ Madeira, OH 45243
 <input type="text" name="name" placeholder="Full Name" required>
 
 <input type="email" name="email" placeholder="Email Address" required>
+
+<label>Number of Spots</label>
+<select id="spotsSelect">
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+</select>
 
 <button type="submit" id="waitlistBtn">Join Waitlist</button>
 
@@ -139,9 +145,7 @@ Madeira, OH 45243
 
 <div class="qr">
 <h3>Scan to Join Waitlist</h3>
-
 <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://tatpin.github.io/pysanky-workshop/">
-
 </div>
 
 </div>
@@ -158,7 +162,7 @@ Zelle: 513-607-8364
 
 <script>
 
-const scriptURL = "https://script.google.com/macros/s/AKfycbx2D26D5Y1BxbC7uPEEfv1i42mySDl7LntGLHBSS3a2NoLf8TT3ssxx-ozT8A31g4Ic3g/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbwSeHvvWMoPWVPMeUPsVeevBDW90i17LIGHV1Y_38KmkdntH6zjIXdlOJW2kSIUHGMczQ/exec";
 const waitlistLimit = 15;
 
 async function checkWaitlist() {
@@ -166,7 +170,6 @@ async function checkWaitlist() {
   try {
 
     const response = await fetch(scriptURL + "?action=getWaitlist");
-
     const data = await response.json();
 
     const remaining = waitlistLimit - data.waitlistCount;
@@ -174,11 +177,14 @@ async function checkWaitlist() {
     const display = document.getElementById("waitlistDisplay");
 
     if (remaining <= 0) {
+
       display.innerHTML = "Waitlist full.";
       document.getElementById("waitlistBtn").disabled = true;
-    }
-    else {
+
+    } else {
+
       display.innerHTML = "Waitlist spots remaining: " + remaining;
+
     }
 
   } catch (error) {
@@ -197,9 +203,12 @@ document.getElementById("waitlistForm")
 
   const formData = new FormData(this);
 
+  const spots = parseInt(document.getElementById("spotsSelect").value);
+
   const data = {
     name: formData.get("name"),
     email: formData.get("email"),
+    spots: spots,
     type: "waitlist"
   };
 
