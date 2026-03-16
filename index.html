@@ -66,15 +66,16 @@ button:disabled {
   background: #aaa;
 }
 
+.notice {
+  font-weight: bold;
+  color: #a00000;
+  margin-bottom: 10px;
+}
+
 .seats {
   margin-top: 10px;
   font-weight: bold;
   color: #a65c00;
-}
-
-.total {
-  font-weight: bold;
-  margin-top: 10px;
 }
 
 .qr {
@@ -98,57 +99,51 @@ footer {
 <div class="container">
 
 <h1>Discover the Art of Pysanky</h1>
+
 <p class="subtitle">
-Join our hands-on workshop and learn traditional Ukrainian egg decorating.
+The March 22 workshop is now full.<br>
+Join the waitlist for our **April 12 workshop at 12 PM**.
 </p>
 
 <div class="content">
 
 <div class="left">
 
-<img src="./pysanky.png" class="main-image"
-     onerror="this.style.display='none'">
+<img src="./pysanky.png" class="main-image" onerror="this.style.display='none'">
 
-<h3>March 22 at 12:00 PM</h3>
+<h3>Waitlist — April 12 at 12:00 PM</h3>
+
 <p>
 Madeira Silverwood Presbyterian Church<br>
 8000 Miami Ave<br>
 Madeira, OH 45243
 </p>
 
-<p class="seats" id="seatDisplay">Loading seats...</p>
+<p class="notice">March 22 class is FULL</p>
 
-<form id="registrationForm">
+<p class="seats" id="waitlistDisplay">Checking waitlist spots...</p>
+
+<form id="waitlistForm">
+
 <input type="text" name="name" placeholder="Full Name" required>
+
 <input type="email" name="email" placeholder="Email Address" required>
 
-<label>Optional Donation ($5 increments)</label>
-<select name="donation" id="donationSelect">
-<option value="0">$0</option>
-<option value="5">$5</option>
-<option value="10">$10</option>
-<option value="15">$15</option>
-<option value="20">$20</option>
-<option value="25">$25</option>
-<option value="30">$30</option>
-<option value="35">$35</option>
-<option value="40">$40</option>
-<option value="45">$45</option>
-<option value="50">$50</option>
-</select>
+<button type="submit" id="waitlistBtn">Join Waitlist</button>
 
-<p class="total" id="totalDisplay">Total Due: $30</p>
-
-<button type="submit" id="registerBtn">Register</button>
 </form>
 
 </div>
 
 <div class="right">
+
 <div class="qr">
-<h3>Scan to Register</h3>
-<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://tatpin.github.io/pysanky-workshop/" alt="QR Code">
+<h3>Scan to Join Waitlist</h3>
+
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://tatpin.github.io/pysanky-workshop/">
+
 </div>
+
 </div>
 
 </div>
@@ -156,8 +151,7 @@ Madeira, OH 45243
 <footer>
 PayPal: Tatyana Pinyayev<br>
 Venmo: @Tatyana-Pinyayev<br>
-Zelle: 513-607-8364<br>
-Cash (registration is still required)
+Zelle: 513-607-8364
 </footer>
 
 </div>
@@ -165,38 +159,40 @@ Cash (registration is still required)
 <script>
 
 const scriptURL = "https://script.google.com/macros/s/AKfycbwSeHvvWMoPWVPMeUPsVeevBDW90i17LIGHV1Y_38KmkdntH6zjIXdlOJW2kSIUHGMczQ/exec";
-const seatLimit = 15;
+const waitlistLimit = 15;
 
-// Update total when donation changes
-document.getElementById("donationSelect").addEventListener("change", function() {
-  const donation = parseInt(this.value);
-  document.getElementById("totalDisplay").innerText =
-    "Total Due: $" + (30 + donation);
-});
+async function checkWaitlist() {
 
-async function checkSeats() {
   try {
-    const response = await fetch(scriptURL);
+
+    const response = await fetch(scriptURL + "?action=getWaitlist");
+
     const data = await response.json();
 
-    const seatsRemaining = data.seatsRemaining;
-    const seatDisplay = document.getElementById("seatDisplay");
+    const remaining = waitlistLimit - data.waitlistCount;
 
-    if (seatsRemaining <= 0) {
-      seatDisplay.innerHTML = "❌ This class is full.";
-      document.getElementById("registerBtn").disabled = true;
-    } else {
-      seatDisplay.innerHTML = "Seats remaining: " + seatsRemaining;
+    const display = document.getElementById("waitlistDisplay");
+
+    if (remaining <= 0) {
+      display.innerHTML = "Waitlist full.";
+      document.getElementById("waitlistBtn").disabled = true;
+    }
+    else {
+      display.innerHTML = "Waitlist spots remaining: " + remaining;
     }
 
   } catch (error) {
-    document.getElementById("seatDisplay").innerHTML =
-      "Seat count unavailable";
+
+    document.getElementById("waitlistDisplay").innerHTML =
+      "Unable to load waitlist count";
+
   }
+
 }
 
-document.getElementById("registrationForm")
-.addEventListener("submit", async function(e) {
+document.getElementById("waitlistForm")
+.addEventListener("submit", async function(e){
+
   e.preventDefault();
 
   const formData = new FormData(this);
@@ -204,7 +200,7 @@ document.getElementById("registrationForm")
   const data = {
     name: formData.get("name"),
     email: formData.get("email"),
-    donation: formData.get("donation")
+    type: "waitlist"
   };
 
   const response = await fetch(scriptURL, {
@@ -213,15 +209,16 @@ document.getElementById("registrationForm")
   });
 
   const result = await response.text();
+
   alert(result);
 
   this.reset();
-  document.getElementById("totalDisplay").innerText = "Total Due: $30";
 
-  checkSeats();
+  checkWaitlist();
+
 });
 
-window.onload = checkSeats;
+window.onload = checkWaitlist;
 
 </script>
 
